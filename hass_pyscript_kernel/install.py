@@ -94,7 +94,7 @@ def install_main():
             print(f"Kernel {args.kernel_name} installed in {kernels[args.kernel_name]}")
             print(f"Config settings from {kernels[args.kernel_name]}/pyscript.conf:")
             load_config(args.kernel_name)
-            for opt in ["hass_host", "hass_url", "hass_token", "hass_proxy"]:
+            for opt in ["hass_host", "hass_url", "hass_token", "hass_proxy", "verify_ssl"]:
                 print(f"    {opt} = {CONFIG_SETTINGS[opt]}")
 
     else:

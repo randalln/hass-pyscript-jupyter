@@ -11,7 +11,8 @@ kernel, it is configured to run the script `hass_pyscript_kernel.py` in this rep
 uses the HASS web interface to do a service call to pyscript that starts the kernel. It then helps
 establish the various socket connections between HASS/pyscript and Jupyter.
 
-## Installation
+## Local Installation
+### Installation
 
 The pyscript Jupyter kernel should be installed on the client machine that is running Jupyter
 notebook and the browser (not on the HASS target). To install the pyscript Jupyter kernel:
@@ -45,7 +46,7 @@ and you can confirm the settings you added above with:
 jupyter pyscript info
 ```
 
-## Running Jupyter
+### Running Jupyter 
 
 You can open the browser-based Jupyter clients (eg, notebook and lab) as usual, eg:
 ```
@@ -60,6 +61,46 @@ jupyter console --kernel=pyscript
 
 If Jupyter can't connect look at [this wiki page](https://github.com/craigbarratt/hass-pyscript-jupyter/wiki/Connection-problems)
 for suggestions.
+
+## Alternative Installation with Home Assistant JupyterLab Add-on
+The [Home Assistant Community Add-On for JupyterLab](https://github.com/hassio-addons/addon-jupyterlab) add-on runs JupyterLab on the Home Assistant machine (vs. locally), but might require at least 4GB of RAM.
+This can be easier than setting it up on your personal computer.  
+
+The following steps will all be executed in Home Assistant:
+
+1. Navigate to the [Settings > Add-ons](https://my.home-assistant.io/redirect/supervisor) panel in your Home Assistant frontend, and click on the "Add-on store" tab.
+2. Install the **JupyterLab** add-on.
+3. Click on the top **Configuration** tab.
+4. Click on the vertical ... -> **Edit in YAML**, then overwrite the defaults with the following:
+```yaml
+github_access_token: ""
+system_packages: []
+init_commands:
+  - pip install hass_pyscript_kernel
+  - jupyter pyscript install
+  - >-
+    echo "[homeassistant]" >
+    /usr/local/share/jupyter/kernels/pyscript/pyscript.conf
+  - >-
+    echo "hass_host = homeassistant" >>
+    /usr/local/share/jupyter/kernels/pyscript/pyscript.conf
+  - >-
+    echo "hass_url = http://supervisor/core/" >>
+    /usr/local/share/jupyter/kernels/pyscript/pyscript.conf
+  - >-
+    echo "hass_token = $SUPERVISOR_TOKEN" >>
+    /usr/local/share/jupyter/kernels/pyscript/pyscript.conf
+  - mkdir -p /config/notebooks/pyscript
+  - ln -sf /config/pyscript /config/notebooks/pyscript/config-pyscript
+  - >-
+    curl
+    https://raw.githubusercontent.com/craigbarratt/hass-pyscript-jupyter/master/pyscript_tutorial.ipynb
+    -o /config/notebooks/pyscript/pyscript_tutorial.ipynb
+```
+5. Click the Info top tab and select **Add to sidebar**.
+6. Click **Start**.
+7. _Optional_: Click **Log** top tab and look for any errors.
+8. Click **JupyterLab** on the left sidebar. You'll find the tutorial below already in the "pyscript" folder inside JupyterLab.
 
 ## Tutorial
 
